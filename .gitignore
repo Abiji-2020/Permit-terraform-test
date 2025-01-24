@@ -1,6 +1,6 @@
 # Local .terraform directories
 **/.terraform/*
-
+/terraform-provider-permit-io/
 # .tfstate files
 *.tfstate
 *.tfstate.*
