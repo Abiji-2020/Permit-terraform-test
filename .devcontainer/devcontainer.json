@@ -1,14 +1,11 @@
 {
-    "name" : "Terraform Dev Container",
-"dockerFile" : "Dockerfile",
-"context":"..",
-"settings":{
+  "name": "Terraform Dev Container",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "settings": {
     "terminal.integrated.defaultProfile.linux": "bash"
-},
-"extensions":[
-    "hashicorp.terraform"
-],
-"postCreateCommand": "terraform --version",
-"shutdownAction": "stopContainer"
-
+  },
+  "extensions": ["hashicorp.terraform"],
+  "postCreateCommand": "terraform --version",
+  "shutdownAction": "stopContainer"
 }
