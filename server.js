@@ -46,7 +46,7 @@ const generateTfFile = (data, apiKey) => {
 
 app.post("/apply", (req, res) => {
   try {
-    const apiKey = req.headers["Authorization"];
+    const apiKey = req.headers['authorization'];
     if (!apiKey) {
       return res
         .status(400)
