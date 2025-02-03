@@ -6,46 +6,49 @@ const { exec } = require("child_process");
 const app = express();
 app.use(express.json());
 
-const TF_FILE = path.join(__dirname, "/temp/config.tf");
-
+const TF_FILE = path.join(__dirname, "temp/config.tf");
 const generateTfFile = (data, apiKey) => {
-  let tfContent = `terraform{
-        required_providers {
-            permitio = {
-                source = "registry.terraform.io/permitio/permit-io"
-            }
-        }
+  // Start the Terraform configuration
+  let tfContent = `
+terraform {
+  required_providers {
+    permitio = {
+      source = "registry.terraform.io/permitio/permit-io"
     }
+  }
+}
 
-    provider "permitio" {
-        api_key = "${apiKey}"
-    }
+provider "permitio" {
+  api_key = "${apiKey}"
+}
+
 `;
 
+  // Loop through resources and generate their block in the Terraform file
   data.resources.forEach((resource) => {
-    tfContent += `resource "${resource.type}" "${resource.key}" {
-            key = "${resource.key}"
-            name = "${resource.name}"    
-        `;
-
-    if (resource.actions) {
-      tfContent += ` actions = {
-        `;
-      Object.entries(resource.actions).forEach(([key, value]) => {
-        tfContent += `      "${key} = {
-                "name" = "${value.name}"
-            }`;
-      });
-      tfContent += ` }
-`;
-    }
-    tfContent += ` attributes = {}
+    tfContent += `
+resource "${resource.type}" "${resource.key}" {
+  key = "${resource.key}"
+  name = "${resource.name}"
+  
+  // Handle actions if present
+  ${resource.actions ? `actions = {
+    ${Object.entries(resource.actions).map(([key, value]) => `
+      "${key}" = {
+        "name" = "${value.name}"
+      }
+    `).join("\n")}
+  }` : ''}
+  
+  // Default empty attributes block
+  attributes = {}
 }
     `;
   });
+
+  // Write the generated content to the temp/config.tf file
   fs.writeFileSync(TF_FILE, tfContent, "utf-8");
 };
-
 app.post("/apply", (req, res) => {
   try {
     const apiKey = req.headers['authorization'];
