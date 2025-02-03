@@ -1,10 +1,15 @@
 from hashicorp/terraform:latest
 
-run apk add --no-cache \ 
-    nginx \ 
-    npm \
-    go
+RUN apk add --no-cache nodejs npm
 
-workdir /workspace
-run git clone https://github.com/permitio/terraform-provider-permit-io
+WORKDIR /app
 
+# Copy package.json and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
