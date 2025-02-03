@@ -6,7 +6,7 @@ const { exec } = require("child_process");
 const app = express();
 app.use(express.json());
 
-const TF_FILE = path.join(__dirname, "config.tf");
+const TF_FILE = path.join(__dirname, "/temp/config.tf");
 
 const generateTfFile = (data, apiKey) => {
   let tfContent = `terraform{
@@ -19,7 +19,8 @@ const generateTfFile = (data, apiKey) => {
 
     provider "permitio" {
         api_key = "${apiKey}"
-    }`;
+    }
+`;
 
   data.resources.forEach((resource) => {
     tfContent += `resource "${resource.type}" "${resource.key}" {
@@ -39,7 +40,8 @@ const generateTfFile = (data, apiKey) => {
 `;
     }
     tfContent += ` attributes = {}
-}`;
+}
+    `;
   });
   fs.writeFileSync(TF_FILE, tfContent, "utf-8");
 };
@@ -55,7 +57,7 @@ app.post("/apply", (req, res) => {
     generateTfFile(req.body, apiKey);
     exec(
       "terraform init && terraform apply -auto-approve",
-      { cwd: __dirname },
+      { cwd: __dirname+"/temp"},
       (error, stdout, stderr) => {
         if (error) {
           return res.status(500).json({ error: stderr || error.message });
