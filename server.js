@@ -36,7 +36,7 @@ app.post("/apply", (req, res) => {
   }
 });
 
-const PORT = 3456;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
